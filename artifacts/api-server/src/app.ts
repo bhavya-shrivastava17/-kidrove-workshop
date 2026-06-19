@@ -1,15 +1,12 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import { join } from "path";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 const app: Express = express();
+
 app.use(
   pinoHttp({
     logger,
@@ -32,9 +29,10 @@ app.use(
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use("/api", router);
 
-const frontendDist = join(__dirname, "../../../../artifacts/workshop/dist/public");
+const frontendDist = join(process.cwd(), "artifacts/workshop/dist/public");
 app.use(express.static(frontendDist));
 app.get("*splat", (_req, res) => {
   res.sendFile(join(frontendDist, "index.html"));
