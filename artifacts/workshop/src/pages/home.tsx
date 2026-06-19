@@ -28,7 +28,7 @@ import { Calendar, Clock, Monitor, IndianRupee, Cpu, BrainCircuit, Code, Lightbu
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
-  phone: z.string().min(7, { message: "Phone number must be at least 7 digits." }),
+  phone: z.string().min(7, { message: "Phone number must be at least 10 digits." }),
   message: z.string().optional(),
 });
 
