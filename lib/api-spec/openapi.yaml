@@ -1,0 +1,160 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: enquiry
+    description: Workshop enquiry / registration
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /enquiry:
+    post:
+      operationId: submitEnquiry
+      tags: [enquiry]
+      summary: Submit workshop enquiry
+      description: Accept registration form data, validate required fields, and store the enquiry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EnquiryInput"
+      responses:
+        "201":
+          description: Enquiry submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnquiryResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /enquiries:
+    get:
+      operationId: listEnquiries
+      tags: [enquiry]
+      summary: List all enquiries
+      description: Returns all submitted workshop enquiries sorted by most recent first
+      responses:
+        "200":
+          description: List of enquiries
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnquiryListResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    EnquiryInput:
+      type: object
+      required:
+        - name
+        - email
+        - phone
+      properties:
+        name:
+          type: string
+          minLength: 2
+          description: Full name of the registrant
+        email:
+          type: string
+          format: email
+          description: Email address
+        phone:
+          type: string
+          minLength: 7
+          description: Phone number
+        message:
+          type: ["string", "null"]
+          description: Optional message or questions
+    EnquiryResponse:
+      type: object
+      required:
+        - success
+        - message
+        - id
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        id:
+          type: integer
+    EnquiryItem:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - phone
+        - createdAt
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        message:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+    EnquiryListResponse:
+      type: object
+      required:
+        - data
+        - total
+        - todayCount
+        - thisWeekCount
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnquiryItem"
+        total:
+          type: integer
+          description: Total number of enquiries
+        todayCount:
+          type: integer
+          description: Number of enquiries received today
+        thisWeekCount:
+          type: integer
+          description: Number of enquiries received this week
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
