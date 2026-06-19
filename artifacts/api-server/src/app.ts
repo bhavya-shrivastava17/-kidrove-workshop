@@ -34,7 +34,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", router);
 
-const frontendDist = path.join(__dirname, "../../../workshop/dist");
+const frontendDist = path.join(__dirname, "../../../workshop/dist/public");
 app.use(express.static(frontendDist));
 app.get("*splat", (_req, res) => {
   res.sendFile(path.join(frontendDist, "index.html"));
